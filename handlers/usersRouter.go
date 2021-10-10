@@ -8,11 +8,12 @@ import (
 )
 
 func UsersRouter(w http.ResponseWriter, r *http.Request) {
-	path := strings.TrimSpace(r.URL.Path + "/")
+	path := strings.TrimSuffix(r.URL.Path, "/")
 
 	if path == "/users" {
 		switch r.Method {
 		case http.MethodGet:
+			usersGetAll(w, r)
 			return
 		case http.MethodPost:
 			return
@@ -42,7 +43,5 @@ func UsersRouter(w http.ResponseWriter, r *http.Request) {
 	default:
 		postError(w, http.StatusMethodNotAllowed)
 		return
-
 	}
-
 }
