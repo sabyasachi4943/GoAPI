@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"github.com/asdine/storm"
 	"github.com/sabyasachi4943/GoAPI/user"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -50,6 +51,19 @@ func usersPostOne(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	w.Header().Set("Location", "/users/" + u.ID.Hex())
+	w.Header().Set("Location", "/users/"+u.ID.Hex())
 	w.WriteHeader(http.StatusCreated)
+}
+
+func usersGetOne(w http.ResponseWriter, _ *http.Request, id bson.ObjectId) {
+	u, err := user.One(id)
+	if err != nil {
+		if err == storm.ErrNotFound {
+			postError(w, http.StatusNotFound)
+			return
+		}
+		postError(w, http.StatusInternalServerError)
+		return
+	}
+	postBodyResponse(w, http.StatusOK, jsonResponse{"user": u})
 }
