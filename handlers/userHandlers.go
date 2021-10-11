@@ -5,6 +5,7 @@ import (
 	"errors"
 	"io/ioutil"
 	"net/http"
+	"strings"
 
 	"github.com/asdine/storm"
 	"github.com/sabyasachi4943/GoAPI/user"
@@ -33,7 +34,7 @@ func usersGetAll(w http.ResponseWriter, r *http.Request) {
 	}
 	if r.Method == http.MethodHead {
 		postBodyResponse(w, http.StatusOK, jsonResponse{})
-		return 
+		return
 	}
 	postBodyResponse(w, http.StatusOK, jsonResponse{"users": users})
 }
@@ -71,7 +72,7 @@ func usersGetOne(w http.ResponseWriter, r *http.Request, id bson.ObjectId) {
 	}
 	if r.Method == http.MethodHead {
 		postBodyResponse(w, http.StatusOK, jsonResponse{})
-		return 
+		return
 	}
 	postBodyResponse(w, http.StatusOK, jsonResponse{"user": u})
 }
@@ -124,7 +125,6 @@ func usersPatchOne(w http.ResponseWriter, r *http.Request, id bson.ObjectId) {
 	postBodyResponse(w, http.StatusOK, jsonResponse{"user": u})
 }
 
-
 func usersDeleteOne(w http.ResponseWriter, _ *http.Request, id bson.ObjectId) {
 	err := user.Delete(id)
 	if err != nil {
@@ -136,4 +136,9 @@ func usersDeleteOne(w http.ResponseWriter, _ *http.Request, id bson.ObjectId) {
 		return
 	}
 	w.WriteHeader(http.StatusOK)
+}
+
+func postOptionsResponse(w http.ResponseWriter, methods []string, content jsonResponse) {
+	w.Header().Set("Allow", strings.Join(methods, ","))
+	postBodyResponse(w, http.StatusOK, content)
 }
